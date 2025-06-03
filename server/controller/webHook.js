@@ -12,6 +12,10 @@ export const clerkWebHooks = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Missing Clerk signature headers' });
     }
 
+    console.log("🔥 Webhook triggered");
+console.log("Headers:", req.headers);
+console.log("Body:", req.body);
+
     // Create webhook instance
     const whook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
 
