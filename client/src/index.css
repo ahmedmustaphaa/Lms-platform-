@@ -1,0 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+
+@import "tailwindcss";
+*{
+  font-family: Outfit;
+}
+
+.input-field {
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.input-field:focus {
+  border-color: #3b82f6; /* Tailwind blue-500 */
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3); /* Tailwind blue-500 with opacity */
+}
+
+@keyframes fadeInStar {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fadeInStar {
+  animation: fadeInStar 0.5s ease-out forwards;
+}
