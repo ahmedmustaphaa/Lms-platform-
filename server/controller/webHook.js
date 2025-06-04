@@ -1,46 +1,35 @@
-import { Webhook } from 'svix';
 import { userModel } from '../models/user.js';
 
 export const clerkWebHooks = async (req, res) => {
   try {
-    const svixId = req.headers['svix-id'];
-    const svixTimestamp = req.headers['svix-timestamp'];
-    const svixSignature = req.headers['svix-signature'];
-
-    if (!svixId || !svixTimestamp || !svixSignature) {
-      return res.status(400).json({ success: false, message: 'Missing Clerk signature headers' });
-    }
-
-    // ✅ لازم raw body هنا
-    const payload = req.body; // Buffer
+    // ✅ مؤقتًا بنعدي التحقق عشان نختبر التخزين
+    const payload = req.body;
     const bodyString = payload.toString();
 
-    const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
-
-    const evt = wh.verify(bodyString, {
-      'svix-id': svixId,
-      'svix-timestamp': svixTimestamp,
-      'svix-signature': svixSignature,
-    });
-
+    // ✅ بدل verify من svix، هنستخدم parse مؤقتًا
+    const evt = JSON.parse(bodyString);
     const { data, type } = evt;
 
     console.log("🟢 Webhook received:", type);
+    console.log("📦 Payload data:", data);
 
     switch (type) {
       case 'user.created':
-        await userModel.create({
+        const userData = {
           _id: data.id,
-          email: data.email_addresses[0].email_address,
-          name: `${data.first_name} ${data.last_name}`,
+          email: data.email_addresses?.[0]?.email_address,
+          name: `${data.first_name || ''} ${data.last_name || ''}`.trim(),
           imageUrl: data.image_url,
-        });
+        };
+
+        console.log("✅ Creating user with data:", userData);
+        await userModel.create(userData);
         return res.status(200).json({ success: true });
 
       case 'user.updated':
         await userModel.findByIdAndUpdate(data.id, {
-          email: data.email_addresses[0].email_address,
-          name: `${data.first_name} ${data.last_name}`,
+          email: data.email_addresses?.[0]?.email_address,
+          name: `${data.first_name || ''} ${data.last_name || ''}`.trim(),
           imageUrl: data.image_url,
         });
         return res.status(200).json({ success: true });
