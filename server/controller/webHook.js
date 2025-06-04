@@ -2,11 +2,14 @@ import { userModel } from '../models/user.js';
 
 export const clerkWebHooks = async (req, res) => {
   try {
-    // ✅ مؤقتًا بنعدي التحقق عشان نختبر التخزين
-    const payload = req.body;
-    const bodyString = payload.toString();
+    console.log('🔔 Webhook endpoint hit');
+    console.log('Headers:', req.headers);
 
-    // ✅ بدل verify من svix، هنستخدم parse مؤقتًا
+    const payload = req.body; // لازم يكون Buffer من bodyParser.raw
+    const bodyString = payload.toString();
+    console.log('Raw body:', bodyString);
+
+    // مؤقتاً بنستخدم JSON.parse بدلاً من svix.verify عشان التجربة
     const evt = JSON.parse(bodyString);
     const { data, type } = evt;
 
@@ -15,27 +18,41 @@ export const clerkWebHooks = async (req, res) => {
 
     switch (type) {
       case 'user.created':
-        const userData = {
-          _id: data.id,
-          email: data.email_addresses?.[0]?.email_address,
-          name: `${data.first_name || ''} ${data.last_name || ''}`.trim(),
-          imageUrl: data.image_url,
-        };
-
-        console.log("✅ Creating user with data:", userData);
-        await userModel.create(userData);
+        try {
+          const userData = {
+            _id: data.id,
+            email: data.email_addresses?.[0]?.email_address || 'noemail@example.com',
+            name: `${data.first_name || ''} ${data.last_name || ''}`.trim() || 'No Name',
+            imageUrl: data.image_url || '',
+          };
+          console.log("✅ Creating user with data:", userData);
+          await userModel.create(userData);
+          console.log('💾 User saved!');
+        } catch (err) {
+          console.error('❌ Error saving user:', err);
+        }
         return res.status(200).json({ success: true });
 
       case 'user.updated':
-        await userModel.findByIdAndUpdate(data.id, {
-          email: data.email_addresses?.[0]?.email_address,
-          name: `${data.first_name || ''} ${data.last_name || ''}`.trim(),
-          imageUrl: data.image_url,
-        });
+        try {
+          await userModel.findByIdAndUpdate(data.id, {
+            email: data.email_addresses?.[0]?.email_address || '',
+            name: `${data.first_name || ''} ${data.last_name || ''}`.trim() || '',
+            imageUrl: data.image_url || '',
+          });
+          console.log('♻️ User updated');
+        } catch (err) {
+          console.error('❌ Error updating user:', err);
+        }
         return res.status(200).json({ success: true });
 
       case 'user.deleted':
-        await userModel.findByIdAndDelete(data.id);
+        try {
+          await userModel.findByIdAndDelete(data.id);
+          console.log('🗑️ User deleted');
+        } catch (err) {
+          console.error('❌ Error deleting user:', err);
+        }
         return res.status(200).json({ success: true });
 
       default:
