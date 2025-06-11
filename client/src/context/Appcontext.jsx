@@ -3,7 +3,11 @@ import React, { createContext, useContext, useEffect, useState } from 'react'
 import { dummyCourses } from '../assets/assets';
 import { useNavigate } from 'react-router';
 import humanizeDuration from 'humanize-duration';
-const appContextProvider=createContext()
+import  {useAuth,useUser} from '@clerk/clerk-react'
+const appContextProvider=createContext();
+
+
+
 function Appcontext({children}) {
 
 
@@ -14,7 +18,12 @@ function Appcontext({children}) {
 
    
      const navigate=useNavigate();
+     const {getToken}=useAuth();
+     const {user}=useUser();
 
+     console.log(user)
+const userId = user?.id;
+console.log("User ID:", userId);
 
      const fetchUserEnrolledCourses=async()=>{
       setenrolledCourses(dummyCourses)
@@ -86,6 +95,18 @@ const calculateNumberOfLectures = (course) => {
   return totalLectures;
 };
 
+
+const logToken=async ()=>{
+   console.log(  await getToken())
+}
+
+useEffect(()=>{
+  if(user){
+
+    logToken();
+
+  }
+},[user])
 
 
   useEffect(()=>{
