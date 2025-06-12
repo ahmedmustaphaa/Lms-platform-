@@ -21,7 +21,7 @@ await connectCloudinary();
 
 
 
-app.post('/clerk',express.json(), clerkWebHooks);
+app.post('/clerk', express.raw({ type: 'application/json' }), clerkWebHooks);
 app.use('/api/educator',educatorRouter)
 app.use('/api/course',courseRouter)
 app.use('/api/user',UserRouter);

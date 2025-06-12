@@ -6,6 +6,8 @@ import { Webhook } from 'svix';
 
 export const clerkWebHooks = async (req, res) => {
   try {
+    console.log("📦 Full body received:", req.body);
+
     const { type, data } = req.body;
 
     console.log("📢 Event type:", type);
@@ -39,6 +41,7 @@ export const clerkWebHooks = async (req, res) => {
 
     res.status(200).json({ success: true });
   } catch (err) {
+    console.log("❌ Error occurred:", err)
     console.error("❌ Error processing webhook:", err.message);
     res.status(500).json({ success: false, message: err.message });
   }
