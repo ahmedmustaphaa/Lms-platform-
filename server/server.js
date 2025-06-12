@@ -18,11 +18,11 @@ app.use(cors());
 app.use(clerkMiddleware())
 
 await connectCloudinary();
-app.use(express.json()); // ✅ استخدم JSON Middleware الطبيعي
 
 
-app.post('/clerk', clerkWebHooks);
-app.use('/api/educator',express.json(),educatorRouter)
+
+app.post('/clerk',express.json(), clerkWebHooks);
+app.use('/api/educator',educatorRouter)
 app.use('/api/course',courseRouter)
 app.use('/api/user',UserRouter);
 

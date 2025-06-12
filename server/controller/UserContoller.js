@@ -1,5 +1,6 @@
 
 import CouserModel from "../models/course.js";
+import { CourseProgress } from "../models/coursePrograms.js";
 import { Puraches } from "../models/purchase.js";
 import { userModel } from "../models/user.js";
 import stripe, { Stripe } from 'stripe'
@@ -108,5 +109,69 @@ const session = await stripeInstance.checkout.sessions.create({
       success: false,
       message: error.message,
     });
+  }
+};
+
+export const updateUserCourseProgress = async (req, res) => {
+  try {
+    const userId = req.auth.userId; // ✅ corrected "consr" to "const"
+
+    const { courseId, lectureId } = req.body; // ✅ fixed typo: eureId → lectureId
+
+    if (!userId || !courseId || !lectureId) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    // ✅ Find existing progress record
+    let progress = await CourseProgress.findOne({ userId, courseId });
+
+    // ✅ If no progress exists, create a new one
+    if (!progress) {
+      progress = await CourseProgress.create({
+        userId,
+        courseId,
+        lectureCompleted: [lectureId],
+        completed: false,
+      });
+    } else {
+      // ✅ Add lectureId if not already marked as completed
+      if (!progress.lectureCompleted.includes(lectureId)) {
+        progress.lectureCompleted.push(lectureId);
+      }
+
+      // ✅ Optional: mark as completed if all lectures are done (requires total lectures info)
+      // Example: progress.completed = progress.lectureCompleted.length === totalLectures;
+
+      await progress.save();
+    }
+
+    res.status(200).json({ message: "Progress updated", progress });
+  } catch (error) {
+    console.error('❌ Error updating course progress:', error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+
+export const getUserCourseProgress = async (req, res) => {
+  try {
+    const userId = req.auth.userId; // ✅ Assuming authentication middleware sets this
+    const { courseId } = req.params;
+
+    if (!userId || !courseId) {
+      return res.status(400).json({ message: "Missing userId or courseId" });
+    }
+
+    const progress = await CourseProgress.findOne({ userId, courseId });
+
+    if (!progress) {
+      return res.status(404).json({ message: "No progress found for this course" });
+    }
+
+    res.status(200).json({ progress });
+  } catch (error) {
+    console.error('❌ Error fetching course progress:', error.message);
+    res.status(500).json({ message: "Internal server error" });
   }
 };

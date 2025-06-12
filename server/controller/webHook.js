@@ -2,12 +2,14 @@ import Stripe from 'stripe';
 import { userModel } from '../models/user.js';
 import { Puraches } from '../models/purchase.js';
 import bodyParser from 'body-parser';
+import { Webhook } from 'svix';
+
 export const clerkWebHooks = async (req, res) => {
   try {
-    const { data, type } = req.body;
+    const { type, data } = req.body;
 
-    console.log("🔔 Webhook Event:", type);
-    console.log("📦 Data:", data);
+    console.log("📢 Event type:", type);
+    console.log("📦 Data received:", data);
 
     switch (type) {
       case 'user.created':
@@ -17,8 +19,6 @@ export const clerkWebHooks = async (req, res) => {
           name: `${data.first_name || ''} ${data.last_name || ''}`.trim(),
           imageUrl: data.image_url || '',
         });
-
-        
         break;
 
       case 'user.updated':
@@ -34,13 +34,13 @@ export const clerkWebHooks = async (req, res) => {
         break;
 
       default:
-        break;
+        console.log("ℹ️ No handler for this event type");
     }
 
     res.status(200).json({ success: true });
-  } catch (error) {
-    console.error("❌ Webhook Error:", error);
-    res.status(500).json({ success: false, message: error.message });
+  } catch (err) {
+    console.error("❌ Error processing webhook:", err.message);
+    res.status(500).json({ success: false, message: err.message });
   }
 };
 
