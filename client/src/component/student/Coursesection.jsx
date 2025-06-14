@@ -8,10 +8,14 @@ function Coursesection() {
   const {allcourses}=ShareData()
   return (
     <section className="  rounded-2xl shadow-md  w-[1200px]   ">
+
+
       <div className="  text-center py-[50px]">
         <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
           Learn from the Best
         </h2>
+
+       
         <p className="text-gray-600 text-lg mb-6 leading-relaxed">
           Take online courses from the world’s top universities for free. Discover over 1,700 courses from institutions like Yale, MIT, Harvard, and Oxford. Learn at your own pace, from anywhere.
         </p>

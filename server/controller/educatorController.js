@@ -4,13 +4,12 @@ import cloudinary from 'cloudinary'
 import { userModel } from '../models/user.js';
 import { Puraches } from '../models/purchase.js';
 
-export const updateRoerToEducator = async (req, res) => {
+export const updateRoleToEducator = async (req, res) => {
   try {
-    const userId = req.auth.userId; // ✅ مباشرةً من req.auth
+    const { userId } = req.auth();
 
-    if (!userId) {
-      return res.status(400).json({ success: false, message: "User ID not found in request" });
-    }
+
+   
 
     await clerkClient.users.updateUserMetadata(userId, {
       publicMetadata: {
@@ -24,6 +23,7 @@ export const updateRoerToEducator = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 export const addCourse = async (req, res) => {
   try {

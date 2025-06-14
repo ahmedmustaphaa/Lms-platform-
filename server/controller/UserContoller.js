@@ -4,24 +4,22 @@ import { CourseProgress } from "../models/coursePrograms.js";
 import { Puraches } from "../models/purchase.js";
 import { userModel } from "../models/user.js";
 import stripe, { Stripe } from 'stripe'
-export const getUserData=async (req,res)=>{
-    try{
+export const getUserData = async (req, res) => {
+  try {
+    const userId = req.auth.userId; // دا الـ Clerk ID
 
-        const  userId=req.auth.userId;
-        const user=await userModel.findById(userId);
+    const user = await userModel.findOne({ _id: userId }); // ✅ استخدم findOne
 
-
-
-        if(!user){
-            return res.json({success:false,message:"User not found "})
-        }
-
-
-        res.json({success:true,user})
-    }catch(error){
- return res.json({success:false,message:error.message})
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
     }
-}
+
+    res.json({ success: true, user });
+  } catch (error) {
+    return res.json({ success: false, message: error.message });
+  }
+};
+
 export const userEnrolledData = async (req, res) => {
   try {
     const userId = req.auth.userId;

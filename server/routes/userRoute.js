@@ -3,6 +3,7 @@ import { getUserCourseProgress, getUserData, purchaseCourse, updateUserCoursePro
 
 
 
+
 const UserRouter=express.Router();
 
 UserRouter.get('/data',getUserData);

@@ -5,7 +5,7 @@ import { useClerk,UserButton,useUser } from '@clerk/clerk-react';
 import { ShareData } from '../../context/Appcontext';
 function Navbar() {
 
-  const  {openSignIn}=useClerk();
+  const  {openSign,openSignUp}=useClerk();
 
 
   const {IsEducator,setIsEducator,navigate}=ShareData();
@@ -50,7 +50,7 @@ function Navbar() {
             <Link
               to="/signup"
   
-              onClick={()=>openSignIn()}
+              onClick={()=>openSignUp()}
               className="bg-[#2F5EE6] hover:bg-[#1c46c7] text-white font-semibold px-6 py-2 rounded-full shadow-md transition duration-300"
             >
               Create Account
